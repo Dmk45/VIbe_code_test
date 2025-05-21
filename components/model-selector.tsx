@@ -9,7 +9,7 @@ import { ModelCategory } from "@/components/model-category"
 import { ApiStatusChecker } from "@/components/api-status-checker"
 
 export function ModelSelector() {
-  const { selectedModel, setSelectedModel, availableModels, chatSessions, clearCurrentChat } = useModel()
+  const { selectedModel, setSelectedModel, availableModels, chatSessions, createNewChat } = useModel()
 
   // Group models by provider
   const groupedModels = availableModels.reduce(
@@ -29,7 +29,7 @@ export function ModelSelector() {
         <Button
           variant="outline"
           className="w-full justify-start text-white border-white/20 bg-gray-800 hover:bg-gray-700"
-          onClick={clearCurrentChat}
+          onClick={createNewChat}
         >
           <Plus className="h-4 w-4 mr-2" />
           New chat
@@ -49,8 +49,12 @@ export function ModelSelector() {
                 {provider === "openai" ? "OpenAI" : "Anthropic"}
               </h3>
               {models.map((model) => {
-                const modelKey = `${model.provider}:${model.id}`
-                const hasMessages = chatSessions[modelKey]?.messages.length > 0
+                // Count chats for this model
+                const modelChats = Object.values(chatSessions).filter(
+                  (session) => session.modelId === model.id && session.messages.length > 0,
+                )
+
+                const hasChats = modelChats.length > 0
 
                 return (
                   <Button
@@ -66,7 +70,7 @@ export function ModelSelector() {
                       <div className="mr-2 h-5 w-5 flex items-center justify-center">
                         {selectedModel.id === model.id ? (
                           <Check className="h-4 w-4" />
-                        ) : hasMessages ? (
+                        ) : hasChats ? (
                           <MessageCircle className="h-4 w-4 text-blue-400" />
                         ) : null}
                       </div>
@@ -74,9 +78,9 @@ export function ModelSelector() {
                         <div className="font-medium">{model.name}</div>
                         <div className="flex items-center mt-1">
                           <ModelCategory modelId={model.id} />
-                          {hasMessages && (
+                          {hasChats && (
                             <span className="ml-2 text-xs text-gray-400">
-                              {chatSessions[modelKey].messages.filter((m) => m.role === "user").length} messages
+                              {modelChats.length} {modelChats.length === 1 ? "chat" : "chats"}
                             </span>
                           )}
                         </div>

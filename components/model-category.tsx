@@ -14,10 +14,25 @@ export function ModelCategory({ modelId }: { modelId: string }) {
         name: "Advanced Reasoning",
         variant: "reasoning" as const,
       }
+    } else if (id.includes("claude-3-opus")) {
+      return {
+        name: "High Performance",
+        variant: "anthropic" as const,
+      }
     } else if (id.includes("claude")) {
       return {
         name: "Claude",
         variant: "anthropic" as const,
+      }
+    } else if (id.includes("gpt-4o")) {
+      return {
+        name: "GPT-4o",
+        variant: "default" as const,
+      }
+    } else if (id.includes("gpt-3.5")) {
+      return {
+        name: "GPT-3.5",
+        variant: "default" as const,
       }
     } else {
       return {

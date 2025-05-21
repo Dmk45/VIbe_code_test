@@ -11,6 +11,7 @@ export async function POST(req: Request) {
 
     console.log(`Simple chat API called - Provider: ${provider}, Model: ${modelId}`)
     console.log(`Messages count: ${messages.length}`)
+    console.log(`Request body: ${JSON.stringify({ provider, modelId }, null, 2)}`)
 
     // Check if the required API key is set
     if (provider === "openai" && !process.env.OPENAI_API_KEY) {
@@ -43,7 +44,9 @@ export async function POST(req: Request) {
         content: msg.content,
       }))
 
+      console.log(`Using model: ${provider}:${modelId}`)
       console.log("Calling generateText with model:", `${provider}:${modelId}`)
+      console.log("Messages:", JSON.stringify(formattedMessages))
 
       const result = await generateText({
         model,
@@ -51,6 +54,7 @@ export async function POST(req: Request) {
       })
 
       console.log("Response received, length:", result.text.length)
+      console.log("First 100 chars of response:", result.text.substring(0, 100))
 
       return NextResponse.json({ text: result.text })
     } catch (error) {
